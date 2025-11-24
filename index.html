@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Daily Task Scheduler - Python Project</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #ffb84d, #ff8c00);
+            font-family: Arial, sans-serif;
+        }
+
+        .card {
+            background: white;
+            width: 75%;
+            margin: 40px auto;
+            padding: 30px;
+            border-radius: 18px;
+            box-shadow: 0 0 25px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #ff8c00;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: #ff8c00;
+            margin-top: 25px;
+            border-left: 5px solid #ff8c00;
+            padding-left: 10px;
+        }
+
+        p {
+            font-size: 17px;
+            line-height: 1.6;
+        }
+
+        pre {
+            background: #1e1e1e;
+            color: #00e676;
+            padding: 20px;
+            border-radius: 12px;
+            overflow-x: auto;
+            font-size: 14px;
+            line-height: 1.4;
+            white-space: pre-wrap;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 15px;
+            margin-top: 30px;
+            color: white;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card">
+        <h1>Daily Task Scheduler</h1>
+
+        <h2>👤 Student Information</h2>
+        <p>
+            <b>Name:</b> Rajnandini Alabatte<br>
+            <b>Registration Number:</b> 25BAI10125<br>
+            <b>Subject:</b> Python Essentials<br>
+            <b>Topic:</b> Daily Task Scheduler
+        </p>
+
+        <h2>📘 Project Overview</h2>
+        <p>
+            The Daily Task Scheduler is a Python project designed to help users manage 
+            their daily activities. Users can add, modify, complete, and view tasks in a 
+            structured manner. The project also includes an automatic reminder system.
+        </p>
+
+        <h2>🛠 Technologies Used</h2>
+        <p>
+            ✔ Python Programming<br>
+            ✔ JSON for saving tasks<br>
+            ✔ Multithreading for reminders<br>
+            ✔ Console based UI<br>
+        </p>
+
+        <h2>✨ Main Features</h2>
+        <p>
+            • Add new task<br>
+            • View tasks (pending & completed)<br>
+            • Mark tasks as completed<br>
+            • Automatic reminder system<br>
+            • JSON storage<br>
+        </p>
+
+        <h2>💻 Python Source Code</h2>
+        <pre>
+import json
+import datetime
+import time
+import threading
+import os
+
+TASK_FILE = "tasks.json"
+
+def load_tasks():
+    if not os.path.exists(TASK_FILE):
+        return []
+    with open(TASK_FILE, "r") as f:
+        return json.load(f)
+
+def save_tasks(tasks):
+    with open(TASK_FILE, "w") as f:
+        json.dump(tasks, f, indent=4)
+
+def add_task():
+    task_name = input("Enter task name: ")
+    date = input("Enter date (DD-MM-YYYY): ")
+    time_input = input("Enter time (HH:MM - 24hr format): ")
+
+    task = {
+        "task": task_name,
+        "date": date,
+        "time": time_input,
+        "status": "pending"
+    }
+
+    tasks = load_tasks()
+    tasks.append(task)
+    save_tasks(tasks)
+    print("\nTask Added Successfully!")
+
+def reminder_thread():
+    while True:
+        now = datetime.datetime.now().strftime("%d-%m-%Y %H:%M")
+        tasks = load_tasks()
+
+        for t in tasks:
+            task_time = t["date"] + " " + t["time"]
+            if t["status"] == "pending" and task_time == now:
+                print("\n REMINDER ALERT!")
+                print(f"Task: {t['task']}")
+
+        time.sleep(30)
+
+def view_tasks():
+    tasks = load_tasks()
+    print("\n------ PENDING TASKS ------")
+    for t in tasks:
+        if t["status"] == "pending":
+            print(f"• {t['task']} | {t['date']} {t['time']}")
+
+    print("\n------ COMPLETED TASKS ------")
+    for t in tasks:
+        if t["status"] == "completed":
+            print(f"• {t['task']} | {t['date']} {t['time']}")
+
+def mark_completed():
+    tasks = load_tasks()
+    view_tasks()
+    name = input("\nEnter task name to mark completed: ")
+
+    found = False
+    for t in tasks:
+        if t["task"].lower() == name.lower():
+            t["status"] = "completed"
+            found = True
+
+    if found:
+        save_tasks(tasks)
+        print("\nTask marked as COMPLETED!")
+    else:
+        print("\nTask not found")
+
+def menu():
+    while True:
+        print("\n----- TASK SCHEDULER -----")
+        print("1. Add New Task")
+        print("2. View Tasks")
+        print("3. Mark Task as Completed")
+        print("4. Exit")
+
+        choice = input("Enter choice: ")
+
+        if choice == "1":
+            add_task()
+        elif choice == "2":
+            view_tasks()
+        elif choice == "3":
+            mark_completed()
+        elif choice == "4":
+            print("\nExiting...")
+            break
+
+if _name_ == "_main_":
+    threading.Thread(target=reminder_thread, daemon=True).start()
+    menu()
+        </pre>
+    </div>
+
+    <div class="footer">
+        © 2025 | Daily Task Scheduler Project by Rajnandini Alabatte
+    </div>
+
+</body>
+</html>
